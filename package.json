@@ -1,0 +1,24 @@
+{
+  "name": "colorobjects",
+  "module": "./src/index.ts",
+  "type": "module",
+  "license": "MIT",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "scripts": {
+    "bundle": "tsx ./src/lib/bundler.ts",
+    "build": "esbuild src/builds/colors.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
+    "start": "node dist/index"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "esbuild": "^0.25.8"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "tsx": "^4.20.3"
+  }
+}
