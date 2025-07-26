@@ -1,15 +1,25 @@
-# colorobjects
+# ColorObjects
 
-To install dependencies:
+🎨 The library with colors~!
 
-```bash
-bun install
+### Installation
+
+```sh
+# npm
+> npm install colorobjects
+
+# yarn
+> yarn add colorobjects
+
+# bun
+> bun add colorobjects
 ```
 
-To run:
+### Usage
 
-```bash
-bun run index.ts
+```ts
+import colors, { Azure } from "colorobjects";
+
+const ObjectAzure = colors.Blue.Azure; // #007FFFx
+const ExportedAzure = Azure; // #007FFFx
 ```
-
-This project was created using `bun init` in bun v1.2.19. [Bun](https://bun.com) is a fast all-in-one JavaScript runtime.

@@ -1,15 +1,22 @@
 {
   "name": "colorobjects",
   "module": "./src/index.ts",
+  "version": "1.0.3",
   "type": "module",
   "license": "MIT",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./cjs": "./dist/index.cjs"
   },
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "bundle": "tsx ./src/lib/bundler.ts",
-    "build": "esbuild src/builds/colors.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
-    "start": "node dist/index"
+    "build:esm": "esbuild src/builds/colors.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
+    "build:cjs": "esbuild src/builds/colors.ts --bundle --platform=node --format=cjs --outfile=dist/index.cjs",
+    "build": "npm run build:esm && npm run build:cjs",
+    "prepare": "npm run bundle && npm run build"
   },
   "devDependencies": {
     "@types/bun": "latest",

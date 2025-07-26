@@ -87,6 +87,25 @@ function writeColorObjectToFile(colorObject: ColorObject): void {
 
   // File Content Information
   const fileContent = `export default ${JSON.stringify(colorObject, null, 2)};`;
+  const singleColors: { [colorName: string]: string } = {};
+
+  // Extract all unique colors from colorObject
+  Object.values(colorObject).forEach((category) => {
+    Object.entries(category).forEach(([colorName, colorValue]) => {
+      singleColors[colorName] = colorValue;
+    });
+  });
+
+  // Generate individual color exports
+  const individualExports = Object.entries(singleColors)
+    .map(
+      ([colorName, colorValue]) =>
+        `export const ${colorName} = "${colorValue}";`
+    )
+    .join("\n");
+
+  // Combine default export with individual exports
+  const finalContent = `${individualExports}\n\n${fileContent}`;
 
   // Check OutputDir Exists
   if (!fs.existsSync(outputDir)) {
@@ -94,7 +113,7 @@ function writeColorObjectToFile(colorObject: ColorObject): void {
   }
 
   // Write File Information
-  fs.writeFileSync(outputFile, fileContent, "utf-8");
+  fs.writeFileSync(outputFile, finalContent, "utf-8");
   console.log(`Colors object written to: ${outputFile}`);
 }
 
