@@ -1,6 +1,6 @@
 {
   "name": "colorobjects",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "license": "MIT",
   "description": "A collection of color objects and utilities",
   "type": "module",
@@ -39,13 +39,11 @@
   ],
   "devDependencies": {
     "@types/bun": "latest",
-    "esbuild": "^0.25.8"
+    "esbuild": "^0.25.8",
+    "tsx": "^4.20.3"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "dependencies": {
-    "tsx": "^4.20.3"
   },
   "keywords": [
     "colors",
