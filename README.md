@@ -23,3 +23,10 @@ import colors, { Azure } from "colorobjects";
 const ObjectAzure = colors.Blue.Azure; // #007FFFx
 const ExportedAzure = Azure; // #007FFFx
 ```
+
+### Usage (CJS)
+
+```cjs
+const { Azure } = require("colorobjects");
+const ExportedAzure = Azure; // #007FFFx
+```

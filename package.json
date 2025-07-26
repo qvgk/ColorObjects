@@ -1,10 +1,12 @@
 {
   "name": "colorobjects",
-  "module": "./src/index.ts",
-  "version": "1.0.4",
-  "type": "module",
+  "version": "1.0.5",
   "license": "MIT",
   "description": "A collection of color objects and utilities",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/colors.d.ts",
   "homepage": "https://github.com/qvgk/ColorObjects#readme",
   "bugs": {
     "url": "https://github.com/qvgk/ColorObjects/issues"
@@ -21,12 +23,16 @@
     "bundle": "tsx ./src/lib/bundler.ts",
     "build:esm": "esbuild src/builds/colors.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
     "build:cjs": "esbuild src/builds/colors.ts --bundle --platform=node --format=cjs --outfile=dist/index.cjs",
-    "build": "npm run build:esm && npm run build:cjs",
+    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist src/builds/colors.ts",
+    "build": "npm run build:esm && npm run build:cjs && npm run build:types",
     "prepare": "npm run bundle && npm run build"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./cjs": "./dist/index.cjs"
+    ".": {
+      "types": "./dist/colors.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
   "files": [
     "dist/"
