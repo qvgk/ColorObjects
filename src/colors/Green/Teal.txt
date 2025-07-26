@@ -1,2 +1,2 @@
-Blue, Green
+Green
 008080

@@ -20,13 +20,13 @@
 ```ts
 import colors, { Azure } from "colorobjects";
 
-const ObjectAzure = colors.Blue.Azure; // #007FFFx
-const ExportedAzure = Azure; // #007FFFx
+const ObjectAzure = colors.Blue.Azure; // #007FFF
+const ExportedAzure = Azure; // #007FFF
 ```
 
 ### Usage (CJS)
 
 ```cjs
 const { Azure } = require("colorobjects");
-const ExportedAzure = Azure; // #007FFFx
+const ExportedAzure = Azure; // #007FFF
 ```

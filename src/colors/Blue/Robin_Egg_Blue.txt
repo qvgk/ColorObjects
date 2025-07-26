@@ -1,2 +1,2 @@
-Blue, Green
+Blue
 00CCCC

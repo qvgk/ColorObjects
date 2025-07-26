@@ -1,2 +1,2 @@
-Blue, Green
+Green
 E0FFFF
