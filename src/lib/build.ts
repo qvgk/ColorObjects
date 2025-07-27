@@ -57,9 +57,13 @@ const buildStrings = async () => {
   // Types
   try {
     const tscCmd = `tsc --declaration --emitDeclarationOnly --outDir ${stringsDir} ${fileDir}`;
-    await execSync(tscCmd);
+    const { stdout, stderr } = await execSync(tscCmd);
+    if (stderr) {
+      console.warn("TypeScript warnings:", stderr);
+    }
   } catch (e) {
-    console.error("Failed to generate types: ", e);
+    console.error("Failed to generate types:", e);
+    process.exit(1);
   }
 };
 
@@ -85,9 +89,13 @@ const buildNumbers = async () => {
   // Types
   try {
     const tscCmd = `tsc --declaration --emitDeclarationOnly --outDir ${numbersDir} ${fileDir}`;
-    await execSync(tscCmd);
+    const { stdout, stderr } = await execSync(tscCmd);
+    if (stderr) {
+      console.warn("TypeScript warnings:", stderr);
+    }
   } catch (e) {
-    console.error("Failed to generate types: ", e);
+    console.error("Failed to generate types:", e);
+    process.exit(1);
   }
 };
 

@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 interface ColorObject {
   [colorCategory: string]: {
-    [colorName: string]: string;
+    [colorName: string]: string | number;
   };
 }
 
@@ -54,18 +54,36 @@ function buildColorObjects(): {
       const colorName = path.basename(file, ".txt");
       const filePath = path.join(categoryPath, file);
 
-      // Try-Catch Block
+      // Validate color name format
+      if (!/^[a-zA-Z0-9_]+$/.test(colorName)) {
+        console.warn(`Skipping invalid color name: ${colorName}`);
+        return;
+      } // Try-Catch Block
       try {
         // Fetch Color File Information
         const colorFile = fs.readFileSync(filePath, "utf-8").trim();
         const [colorCategories, colorValue] = colorFile.split("\n");
+
+        // Validate input
         if (!colorCategories || !colorValue) return;
+        if (!/^[0-9A-Fa-f]{6}$/.test(colorValue)) {
+          console.warn(
+            `Invalid hex color format in ${filePath}: ${colorValue}`
+          );
+          return;
+        }
 
         // Run Through Color Categories
         colorCategories
           .replaceAll(" ", "")
           .split(",")
           .forEach((colorCategory) => {
+            // Validate color category name
+            if (!/^[a-zA-Z0-9_]+$/.test(colorCategory)) {
+              console.warn(`Skipping invalid color category: ${colorCategory}`);
+              return;
+            }
+
             // Create Category in JSON for strings
             if (!stringColorObject[colorCategory])
               stringColorObject[colorCategory] = {};
@@ -73,9 +91,12 @@ function buildColorObjects(): {
             if (!numberColorObject[colorCategory])
               numberColorObject[colorCategory] = {};
 
-            // Set Values
+            // Set Values - Convert hex to actual numbers for number colors
             stringColorObject[colorCategory]![colorName] = `#${colorValue}`;
-            numberColorObject[colorCategory]![colorName] = `0x${colorValue}`;
+            numberColorObject[colorCategory]![colorName] = parseInt(
+              colorValue,
+              16
+            );
           });
       } catch (error) {
         console.warn(`Failed to read color file: ${filePath}`, error);
@@ -105,7 +126,7 @@ function writeColorObjectsToFiles(
 
   // Extract all unique colors from stringColors for individual exports
   const singleStringColors: { [colorName: string]: string } = {};
-  const singleNumberColors: { [colorName: string]: string } = {};
+  const singleNumberColors: { [colorName: string]: number } = {};
 
   Object.values(stringColors).forEach((category) => {
     Object.entries(category).forEach(([colorName, colorValue]) => {
@@ -115,7 +136,7 @@ function writeColorObjectsToFiles(
 
   Object.values(numberColors).forEach((category) => {
     Object.entries(category).forEach(([colorName, colorValue]) => {
-      singleNumberColors[colorName] = colorValue as string;
+      singleNumberColors[colorName] = colorValue as number;
     });
   });
 
@@ -144,7 +165,7 @@ function writeColorObjectsToFiles(
     numberColors,
     null,
     2
-  ).replace(/"/g, "")};`;
+  )};`;
 
   // Write Files
   fs.writeFileSync(stringFile, stringFileContent, "utf-8");

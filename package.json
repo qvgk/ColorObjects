@@ -1,6 +1,6 @@
 {
   "name": "colorobjects",
-  "version": "1.2.2",
+  "version": "1.2.2-beta.2",
   "license": "MIT",
   "description": "A collection of color objects and utilities",
   "type": "module",
@@ -8,27 +8,30 @@
   "module": "./dist/strings/index.js",
   "types": "./dist/strings/colors-strings.d.ts",
   "homepage": "https://github.com/qvgk/ColorObjects#readme",
-  "bugs": {
-    "url": "https://github.com/qvgk/ColorObjects/issues"
+  "repository": "github:qvgk/ColorObjects",
+  "bugs": "https://github.com/qvgk/ColorObjects/issues",
+  "author": "qvgk <https://github.com/qvgk>",
+  "keywords": [
+    "colors",
+    "coolors",
+    "hex",
+    "color-palette"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/qvgk/ColorObjects"
-  },
-  "author": {
-    "name": "qvgk",
-    "url": "https://github.com/qvgk"
-  },
+  "sideEffects": false,
   "scripts": {
     "bundle": "tsx ./src/lib/bundler.ts",
     "build": "tsx ./src/lib/build.ts",
-    "prepare": "npm run bundle && npm run build"
+    "prepare": "npm run bundle && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "exports": {
     ".": {
       "types": "./dist/strings/colors-strings.d.ts",
       "import": "./dist/strings/index.js",
-      "require": "./dist/string/index.cjs"
+      "require": "./dist/strings/index.cjs"
     },
     "./numbers": {
       "types": "./dist/numbers/colors-numbers.d.ts",
@@ -40,17 +43,12 @@
     "dist/"
   ],
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.1.8",
     "esbuild": "^0.25.8",
     "tsx": "^4.20.3",
     "ora": "^8.2.0"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "keywords": [
-    "colors",
-    "coolors"
-  ],
-  "dependencies": {}
+  }
 }
