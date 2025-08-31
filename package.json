@@ -1,52 +1,54 @@
 {
   "name": "colorobjects",
-  "version": "1.2.1",
+  "version": "1.2.4",
   "license": "MIT",
   "description": "A collection of color objects and utilities",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/colors.d.ts",
+  "main": "./dist/strings/index.cjs",
+  "module": "./dist/strings/index.js",
+  "types": "./dist/strings/colors-strings.d.ts",
   "homepage": "https://github.com/qvgk/ColorObjects#readme",
-  "bugs": {
-    "url": "https://github.com/qvgk/ColorObjects/issues"
+  "repository": "github:qvgk/ColorObjects",
+  "bugs": "https://github.com/qvgk/ColorObjects/issues",
+  "author": "qvgk <https://github.com/qvgk>",
+  "keywords": [
+    "colors",
+    "coolors",
+    "hex",
+    "color-palette"
+  ],
+  "engines": {
+    "node": ">=16.0.0"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/qvgk/ColorObjects"
-  },
-  "author": {
-    "name": "qvgk",
-    "url": "https://github.com/qvgk"
-  },
+  "sideEffects": false,
   "scripts": {
     "bundle": "tsx ./src/lib/bundler.ts",
-    "build:esm": "esbuild src/builds/colors.ts --bundle --platform=node --format=esm --outfile=dist/index.js",
-    "build:cjs": "esbuild src/builds/colors.ts --bundle --platform=node --format=cjs --outfile=dist/index.cjs",
-    "build:types": "tsc --declaration --emitDeclarationOnly --outDir dist src/builds/colors.ts",
-    "build": "npm run build:esm && npm run build:cjs && npm run build:types",
-    "prepare": "npm run bundle && npm run build"
+    "build": "tsx ./src/lib/build.ts",
+    "prepare": "npm run bundle && npm run build",
+    "test": "echo \"No tests specified\" && exit 0"
   },
   "exports": {
     ".": {
-      "types": "./dist/colors.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "types": "./dist/strings/colors-strings.d.ts",
+      "import": "./dist/strings/index.js",
+      "require": "./dist/strings/index.cjs"
+    },
+    "./numbers": {
+      "types": "./dist/numbers/colors-numbers.d.ts",
+      "import": "./dist/numbers/index.js",
+      "require": "./dist/numbers/index.cjs"
     }
   },
   "files": [
     "dist/"
   ],
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.1.8",
     "esbuild": "^0.25.8",
-    "tsx": "^4.20.3"
+    "tsx": "^4.20.3",
+    "ora": "^8.2.0"
   },
   "peerDependencies": {
     "typescript": "^5"
-  },
-  "keywords": [
-    "colors",
-    "coolors"
-  ]
+  }
 }

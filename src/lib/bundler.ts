@@ -8,23 +8,28 @@ const __dirname = path.dirname(__filename);
 
 interface ColorObject {
   [colorCategory: string]: {
-    [colorName: string]: string;
+    [colorName: string]: string | number;
   };
 }
 
 /**
  * Recursively reads all color files from the colors directory
- * and creates a nested object structure
+ * and creates nested object structures for both string and number formats
  */
-function buildColorObject(): ColorObject {
+function buildColorObjects(): {
+  stringColors: ColorObject;
+  numberColors: ColorObject;
+} {
   // Variables
   const colorsDir = path.join(__dirname, "../colors");
-  const colorObject: ColorObject = {};
+
+  const stringColorObject: ColorObject = {};
+  const numberColorObject: ColorObject = {};
 
   // Exist Check
   if (!fs.existsSync(colorsDir)) {
     console.warn("Colors directory not found");
-    return colorObject;
+    return { stringColors: stringColorObject, numberColors: numberColorObject };
   }
 
   // Fetch All Directories
@@ -38,7 +43,7 @@ function buildColorObject(): ColorObject {
     // Variables
     const categoryPath = path.join(colorsDir, category);
 
-    // Feth Color Files
+    // Fetch Color Files
     const colorFiles = fs
       .readdirSync(categoryPath)
       .filter((file) => file.endsWith(".txt"));
@@ -49,24 +54,49 @@ function buildColorObject(): ColorObject {
       const colorName = path.basename(file, ".txt");
       const filePath = path.join(categoryPath, file);
 
-      // Try-Catch Block
+      // Validate color name format
+      if (!/^[a-zA-Z0-9_]+$/.test(colorName)) {
+        console.warn(`Skipping invalid color name: ${colorName}`);
+        return;
+      } // Try-Catch Block
       try {
         // Fetch Color File Information
         const colorFile = fs.readFileSync(filePath, "utf-8").trim();
         const [colorCategories, colorValue] = colorFile.split("\n");
+
+        // Validate input
         if (!colorCategories || !colorValue) return;
+        if (!/^[0-9A-Fa-f]{6}$/.test(colorValue)) {
+          console.warn(
+            `Invalid hex color format in ${filePath}: ${colorValue}`
+          );
+          return;
+        }
 
         // Run Through Color Categories
         colorCategories
           .replaceAll(" ", "")
           .split(",")
           .forEach((colorCategory) => {
-            // Create Category in JSON
-            let jsonCategory = colorObject[colorCategory];
-            if (!jsonCategory) colorObject[colorCategory] = {};
+            // Validate color category name
+            if (!/^[a-zA-Z0-9_]+$/.test(colorCategory)) {
+              console.warn(`Skipping invalid color category: ${colorCategory}`);
+              return;
+            }
 
-            // Set Value
-            colorObject[colorCategory]![colorName] = `#${colorValue}`;
+            // Create Category in JSON for strings
+            if (!stringColorObject[colorCategory])
+              stringColorObject[colorCategory] = {};
+            // Create Category in JSON for numbers
+            if (!numberColorObject[colorCategory])
+              numberColorObject[colorCategory] = {};
+
+            // Set Values - Convert hex to actual numbers for number colors
+            stringColorObject[colorCategory]![colorName] = `#${colorValue}`;
+            numberColorObject[colorCategory]![colorName] = parseInt(
+              colorValue,
+              16
+            );
           });
       } catch (error) {
         console.warn(`Failed to read color file: ${filePath}`, error);
@@ -74,49 +104,77 @@ function buildColorObject(): ColorObject {
     });
   });
 
-  return colorObject;
+  return { stringColors: stringColorObject, numberColors: numberColorObject };
 }
 
 /**
- * Writes the color object to a TypeScript file in the build directory
+ * Writes the color objects to TypeScript files in the build directory
  */
-function writeColorObjectToFile(colorObject: ColorObject): void {
+function writeColorObjectsToFiles(
+  stringColors: ColorObject,
+  numberColors: ColorObject
+): void {
   // Variables
   const outputDir = path.join(__dirname, "../builds");
-  const outputFile = path.join(__dirname, "../builds/colors.ts");
+  const stringFile = path.join(outputDir, "colors-strings.ts");
+  const numberFile = path.join(outputDir, "colors-numbers.ts");
 
-  // File Content Information
-  const fileContent = `export default ${JSON.stringify(colorObject, null, 2)};`;
-  const singleColors: { [colorName: string]: string } = {};
+  // Check OutputDir Exists
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
 
-  // Extract all unique colors from colorObject
-  Object.values(colorObject).forEach((category) => {
+  // Extract all unique colors from stringColors for individual exports
+  const singleStringColors: { [colorName: string]: string } = {};
+  const singleNumberColors: { [colorName: string]: number } = {};
+
+  Object.values(stringColors).forEach((category) => {
     Object.entries(category).forEach(([colorName, colorValue]) => {
-      singleColors[colorName] = colorValue;
+      singleStringColors[colorName] = colorValue as string;
     });
   });
 
-  // Generate individual color exports
-  const individualExports = Object.entries(singleColors)
+  Object.values(numberColors).forEach((category) => {
+    Object.entries(category).forEach(([colorName, colorValue]) => {
+      singleNumberColors[colorName] = colorValue as number;
+    });
+  });
+
+  // Generate string version file
+  const stringIndividualExports = Object.entries(singleStringColors)
     .map(
       ([colorName, colorValue]) =>
         `export const ${colorName} = "${colorValue}";`
     )
     .join("\n");
 
-  // Combine default export with individual exports
-  const finalContent = `${individualExports}\n\n${fileContent}`;
+  const stringFileContent = `${stringIndividualExports}\n\nexport default ${JSON.stringify(
+    stringColors,
+    null,
+    2
+  )};`;
 
-  // Check OutputDir Exists
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir);
-  }
+  // Generate number version file
+  const numberIndividualExports = Object.entries(singleNumberColors)
+    .map(
+      ([colorName, colorValue]) => `export const ${colorName} = ${colorValue};`
+    )
+    .join("\n");
 
-  // Write File Information
-  fs.writeFileSync(outputFile, finalContent, "utf-8");
-  console.log(`Colors object written to: ${outputFile}`);
+  const numberFileContent = `${numberIndividualExports}\n\nexport default ${JSON.stringify(
+    numberColors,
+    null,
+    2
+  )};`;
+
+  // Write Files
+  fs.writeFileSync(stringFile, stringFileContent, "utf-8");
+  fs.writeFileSync(numberFile, numberFileContent, "utf-8");
+
+  console.log(`String colors written to: ${stringFile}`);
+  console.log(`Number colors written to: ${numberFile}`);
 }
 
 // Build Colors
-const colors = buildColorObject();
-writeColorObjectToFile(colors);
+const { stringColors, numberColors } = buildColorObjects();
+writeColorObjectsToFiles(stringColors, numberColors);
