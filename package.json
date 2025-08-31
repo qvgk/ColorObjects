@@ -1,6 +1,6 @@
 {
   "name": "colorobjects",
-  "version": "1.2.2-beta.2",
+  "version": "1.2.4",
   "license": "MIT",
   "description": "A collection of color objects and utilities",
   "type": "module",
